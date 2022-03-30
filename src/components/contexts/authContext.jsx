@@ -8,9 +8,9 @@ export function useAuth() {
     return React.useContext(AuthContext);
 }
 
-export function AuthProvider({ children }/* : any*/) {
+export function AuthProvider({ children }) {
 
-    const [currentUser, setCurrentUser] = React.useState/*<User>*/(/*{email: '', password: ''}*/);
+    const [currentUser, setCurrentUser] = React.useState();
     const [loading, setLoading] = React.useState(true);
 
     function signUp(email, password) {
@@ -29,35 +29,10 @@ export function AuthProvider({ children }/* : any*/) {
         return sendPasswordResetEmail(auth, email);
     }
 
-    function reauthUser(email, password) {
-        //const credential = EmailAuthProvider.credential(email, password);
-        //return reauthenticateWithCredential(email, password);
-        try {
-            const credential = EmailAuthProvider.credential(
-                email,
-                password
-            );
-            reauthenticateWithCredential(currentUser, credential).then(() => {
-                console.log('reauth success');
-            });
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
     async function updateUserEmail(newEmail, password) {
         const credential = EmailAuthProvider.credential(currentUser.email, password);
-        console.log(credential);
-
-
-            await reauthenticateWithCredential(currentUser, credential);
-            return updateEmail(currentUser, newEmail)
-
-
-        /*reauthenticateWithCredential(currentUser, credential).then(() => {
-            return updateEmail(currentUser, newEmail);
-        });*/
-
+        await reauthenticateWithCredential(currentUser, credential);
+        return updateEmail(currentUser, newEmail)
     }
 
     function updateUserPassword(newPassword) {
@@ -81,7 +56,6 @@ export function AuthProvider({ children }/* : any*/) {
         logOut,
         signUp,
         resetPassword,
-        reauthUser,
         updateUserEmail,
         updateUserPassword
     }
