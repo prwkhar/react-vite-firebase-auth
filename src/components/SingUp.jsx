@@ -9,12 +9,13 @@ import {
 import { Formik, Field, Form } from 'formik';
 import styled from "@emotion/styled";
 import { useAuth } from "./contexts/authContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function SingUpForm() {
   const value = useAuth()
   const passwordRef = React.useRef();
-  const history = useNavigate();
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
 
   function validateEmail(value) {
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -53,9 +54,12 @@ export default function SingUpForm() {
       await value.signUp(values.email, values.password);
       navigate('/');
       setSubmitting(false);
-      console.log("Signed up")
     } catch (error) {
-      console.log(error)
+      if (error.code === 'auth/email-already-in-use') {
+        setMessage('This email is already in use.');
+      } else {
+        setMessage('Something went wrong');
+      }
     }
   }
 
@@ -68,6 +72,8 @@ export default function SingUpForm() {
         {(props) => (
           <FormContainer>
             <Title>Sign Up</Title>
+            {message && <CustomAlert status="success" title={message} />}
+            {error && <CustomAlert status="error" title={error} />}
             <Form>
               <Field name='email' validate={validateEmail}>
                 {({ field, form }) => (

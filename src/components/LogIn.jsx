@@ -15,6 +15,8 @@ export default function LogInForm() {
     const value = useAuth()
     const passwordRef = React.useRef();
     const navigate = useNavigate();
+    const [message, setMessage] = useState('')
+    const [error, setError] = useState('')
 
     function validateEmail(value) {
         let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -43,9 +45,15 @@ export default function LogInForm() {
             await value.logIn(values.email, values.password)
             navigate('/');
             setSubmitting(false);
-            console.log("Logged in")
         } catch (error) {
-            console.log(error)
+            setMessage('');
+            if(error.code === 'auth/user-not-found'){
+                setError('User not found')
+            } else if(error.code === 'auth/wrong-password'){
+                setError('Wrong password')
+            } else {
+                setError('Something went wrong')
+            }
         }
     }
 
@@ -58,6 +66,8 @@ export default function LogInForm() {
                 {(props) => (
                     <FormContainer>
                         <Title>Log In</Title>
+                        {message && <CustomAlert status="success" title={message} />}
+                        {error && <CustomAlert status="error" title={error} />}
                         <Form>
                             <Field name='email' validate={validateEmail}>
                                 {({ field, form }) => (
@@ -89,7 +99,7 @@ export default function LogInForm() {
                             </Aligned>
                         </Form>
                         <NeedAccount>Forgot your password? <Link to="/recover-password">Recover it here</Link></NeedAccount>
-                        
+
                     </FormContainer>
                 )}
             </Formik>
