@@ -10,6 +10,7 @@ import { Formik, Field, Form } from 'formik';
 import styled from "@emotion/styled";
 import { useAuth } from "./contexts/authContext";
 import { Link, useNavigate } from "react-router-dom";
+import CustomAlert from "./CustomAlert";
 
 export default function LogInForm() {
     const value = useAuth()
